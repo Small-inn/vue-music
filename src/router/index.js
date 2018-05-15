@@ -4,6 +4,7 @@ import Rank from '@/components/rank/rank'
 import Recommend from '@/components/recommend/recommend'
 import Search from '@/components/search/search'
 import Singer from '@/components/singer/singer'
+import User from '@/components/user/user'
 
 Vue.use(Router)
 
@@ -23,6 +24,10 @@ const routes = [{
   path: '/singer',
   name: 'Singer',
   component: Singer
+}, {
+  path: '/user',
+  name: 'User',
+  component: User
 }]
 
 export default new Router({

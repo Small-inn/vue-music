@@ -9,6 +9,9 @@ import User from '@/components/user/user'
 Vue.use(Router)
 
 const routes = [{
+  path: '/',
+  redirect: '/recommend'
+}, {
   path: '/recommend',
   name: 'Recommend',
   component: Recommend

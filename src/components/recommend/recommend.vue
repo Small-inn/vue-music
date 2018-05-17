@@ -1,29 +1,49 @@
 <template>
   <div class="recommend">
-    <div v-if="recommends.length" class="slider-wrapper">
-      <slider>
-        <div v-for="item in recommends" :key="item.id">
-          <a :href="item.linkUrl">
-            <img :src="item.picUrl" alt="">
-          </a>
+    <div class="recommend-content">
+      <div>
+        <div v-if="recommends.length" class="slider-wrapper">
+          <slider>
+            <div v-for="item in recommends" :key="item.id">
+              <a :href="item.linkUrl">
+                <img :src="item.picUrl" alt="">
+              </a>
+            </div>
+          </slider>
         </div>
-      </slider>
+        <div class="recommend-list">
+          <h1 class="list-title">热门歌单推荐</h1>
+          <ul>
+            <li v-for="(item, index) in discList" class="item" :key="index">
+              <div class="icon">
+                <img width="60" height="60" :src=item.imgUrl />
+              </div>
+              <div class="text">
+                <h2 class="name">{{item.name}}</h2>
+                <p class="desc">{{item.dissname}}</p>
+              </div>
+            </li>
+          </ul>
+        </div>
+      </div>
     </div>
   </div>
 </template>
 
 <script>
 import Slider from 'base/slider/slide'
-import { getRecommend } from 'api/recommend'
+import { getRecommend, getDiscList } from 'api/recommend'
 import { ERR_OK } from 'api/config'
 export default {
   data () {
     return {
-      recommends: []
+      recommends: [],
+      discList: []
     }
   },
   created () {
     this._getRecommend()
+    this._getDisList()
   },
   methods: {
     _getRecommend () {
@@ -32,6 +52,12 @@ export default {
           console.log(res.data.slider)
           this.recommends = res.data.slider
         }
+      })
+    },
+    _getDisList () {
+      getDiscList().then((res) => {
+        console.log(res)
+        this.discList = res.data.discList
       })
     }
   },

@@ -9,8 +9,13 @@ const CopyWebpackPlugin = require('copy-webpack-plugin')
 const HtmlWebpackPlugin = require('html-webpack-plugin')
 const FriendlyErrorsPlugin = require('friendly-errors-webpack-plugin')
 const portfinder = require('portfinder')
+// 默认以ip启动服务
+const ip = require('ip')
+process.env.HOST = ip.address()
+// 数据代理
+const axios = require('axios')
+const bodyParser = require('body-parser')
 
-const HOST = process.env.HOST
 const PORT = process.env.PORT && Number(process.env.PORT)
 
 const devWebpackConfig = merge(baseWebpackConfig, {
@@ -22,6 +27,27 @@ const devWebpackConfig = merge(baseWebpackConfig, {
 
   // these devServer options should be customized in /config/index.js
   devServer: {
+    // 代理接口
+    // before(app) {
+    //   app.use(bodyParser.urlencoded({extended: true}))
+    //   const querystring = require('querystring')
+    //   app.get('/api/getDiscList', function(req, res) {
+    //     const url = 'https://c.y.qq.com/splcloud/fcgi-bin/fcg_get_diss_by_tag.fcg'
+    //     // const url = 'https://c.y.qq.com/splcloud/fcgi-bin/p.fcg'
+    //     axios.get(url, {
+    //       headers: {
+    //         referer: 'https://c.y.qq.com/',
+    //         host: 'c.y.qq.com'
+    //       },
+    //       params: req.query
+    //     }).then((response) => {
+    //       res.json(response.data)
+    //     }).catch((e) => {
+    //       console.log(e)
+    //     })
+    //   })
+    // },
+
     clientLogLevel: 'warning',
     historyApiFallback: {
       rewrites: [
@@ -31,7 +57,8 @@ const devWebpackConfig = merge(baseWebpackConfig, {
     hot: true,
     contentBase: false, // since we use CopyWebpackPlugin.
     compress: true,
-    host: HOST || config.dev.host,
+    // 修改后的HOST
+    host: process.env.HOST || config.dev.host,
     port: PORT || config.dev.port,
     open: config.dev.autoOpenBrowser,
     overlay: config.dev.errorOverlay

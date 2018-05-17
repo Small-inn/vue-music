@@ -65,8 +65,8 @@ export default {
       for (let i = 0; i < this.children.length; i++) {
         let child = this.children[i]
         addClass(child, 'slider-item')
-        child.style.width = sliderWidth + 'px'
-        width += sliderWidth
+        child.style.width = sliderWidth + 'px' // 设置单个slider-item宽度
+        width += sliderWidth // 轮播总宽度（实例中是5，就是5倍大小）
       }
       // 这里处理了第一张和最后一张
       if (this.loop && !isResize) {
@@ -77,6 +77,7 @@ export default {
     },
     _initDos () {
       this.dots = new Array(this.children.length)
+      console.log(this.dots.length)
     },
     // 初始化，better-scroll 参数
     _initSlider () {
@@ -119,6 +120,9 @@ export default {
         this.slider.goToPage(pageIndex, 0, 400)
       }, this.interval)
     }
+  },
+  destroyed () {
+    clearInterval(this.timer)
   }
 }
 </script>

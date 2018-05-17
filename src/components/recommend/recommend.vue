@@ -1,22 +1,28 @@
 <template>
   <div class="recommend">
-    <div class="recommend-content">
+    <!-- :data 是为了触发子组件的scroll里面的watch方法，以refresh，使得滑动生效，类似下面的v-if -->
+    <Scroll ref="scroll" class="recommend-content" :data="discList">
       <div>
+        <!-- 这个判断很重要，因为在slicer组件的mounted的时候初始化方法了，但是这个请求的数据可能还没拿到，导致滑动失效 -->
+        <!-- 1.0 推荐轮播 -->
         <div v-if="recommends.length" class="slider-wrapper">
           <slider>
             <div v-for="item in recommends" :key="item.id">
               <a :href="item.linkUrl">
-                <img :src="item.picUrl" alt="">
+                <!-- 整个slider都是图片撑起来的，所以判断图片是否load完成就OK了 -->
+                <!-- class=""needsclick 解决滑动与fastclick的冲突 -->
+                <img class="needsclick" @load="loadImage" :src="item.picUrl" alt="">
               </a>
             </div>
           </slider>
         </div>
+        <!-- 2.0 推荐歌单 -->
         <div class="recommend-list">
           <h1 class="list-title">热门歌单推荐</h1>
           <ul>
             <li v-for="(item, index) in discList" class="item" :key="index">
               <div class="icon">
-                <img width="60" height="60" :src=item.imgUrl />
+                <img width="60" height="60" v-lazy=item.imgUrl />
               </div>
               <div class="text">
                 <h2 class="name">{{item.name}}</h2>
@@ -26,12 +32,18 @@
           </ul>
         </div>
       </div>
-    </div>
+      <!-- 3.0 loading图片 -->
+      <div class="loading-container" v-show="!discList.length">
+        <loading></loading>
+      </div>
+    </Scroll>
   </div>
 </template>
 
 <script>
 import Slider from 'base/slider/slide'
+import Scroll from 'base/scroll/scroll'
+import Loading from 'base/loading/loading'
 import { getRecommend, getDiscList } from 'api/recommend'
 import { ERR_OK } from 'api/config'
 export default {
@@ -43,9 +55,20 @@ export default {
   },
   created () {
     this._getRecommend()
-    this._getDisList()
+    // 为了出现loading，延迟1秒
+    setTimeout(() => {
+      this._getDisList()
+    }, 1000)
   },
   methods: {
+    loadImage () {
+      if (!this.checkloaded) {
+        this.checkloaded = !this.checkloaded
+        setTimeout(() => {
+          this.$refs.scroll.refresh()
+        }, 20)
+      }
+    },
     _getRecommend () {
       getRecommend().then((res) => {
         if (res.code === ERR_OK) {
@@ -62,7 +85,9 @@ export default {
     }
   },
   components: {
-    Slider
+    Slider,
+    Scroll,
+    Loading
   }
 }
 </script>

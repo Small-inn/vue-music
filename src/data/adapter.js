@@ -1,6 +1,6 @@
 import MockAdapter from 'axios-mock-adapter'
 import axios from 'axios'
-import { discList } from './data'
+import { discList, singerList } from './data'
 
 export default {
   init () {
@@ -16,5 +16,7 @@ export default {
 
     // 推荐歌单信息
     mock.onGet('getDiscList/info', { params: { plaform: 'yqq', hostUin: 0, sin: 0, ein: 29, sortId: 5 } }).reply(200, { discList })
+    // 歌手相关
+    mock.onGet('getSingerList/info', { params: { plaform: 'h5' } }).reply(200, { singerList })
   }
 }

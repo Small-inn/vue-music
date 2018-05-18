@@ -23,6 +23,7 @@ export function getRecommend () {
 
 // 热门歌单推荐请求
 export function getDiscList () {
+  const url = 'getDiscList/info'
   const data = Object.assign({}, {
     params: {
       plaform: 'yqq',
@@ -32,5 +33,5 @@ export function getDiscList () {
       sortId: 5
     }
   })
-  return axios.get('getDiscList/info', data)
+  return axios.get(url, data)
 }

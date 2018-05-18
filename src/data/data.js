@@ -14,4 +14,14 @@ for (let i = 0; i < 20; i++) {
   }))
 }
 
-export { discList }
+// 歌手
+const singerList = []
+for (let i = 0; i < 100; i++) {
+  singerList.push(Mock.mock({
+    id: Mock.Random.guid(),
+    imgUrl: Mock.Random.dataImage(),
+    name: Mock.Random.cname()
+  }))
+}
+
+export { discList, singerList }

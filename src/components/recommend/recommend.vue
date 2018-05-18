@@ -3,7 +3,7 @@
     <!-- :data 是为了触发子组件的scroll里面的watch方法，以refresh，使得滑动生效，类似下面的v-if -->
     <Scroll ref="scroll" class="recommend-content" :data="discList">
       <div>
-        <!-- 这个判断很重要，因为在slicer组件的mounted的时候初始化方法了，但是这个请求的数据可能还没拿到，导致滑动失效 -->
+        <!-- 这个判断很重要，因为在slider组件的mounted的时候初始化方法了，但是这个请求的数据可能还没拿到，导致滑动失效 -->
         <!-- 1.0 推荐轮播 -->
         <div v-if="recommends.length" class="slider-wrapper">
           <slider>

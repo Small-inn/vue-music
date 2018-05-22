@@ -1,43 +1,58 @@
 <template>
-  <div class="singer">
-    <ListView :data="singerList"></ListView>
+  <div class="singer" ref="singer">
+    <list-view @select="selectSinger" :data="singers" ref="list"></list-view>
+    <!-- 挂载子路由 -->
+    <router-view></router-view>
   </div>
 </template>
 
-<script>
+<script type="text/ecmascript-6">
 import ListView from 'base/listview/listview'
-import { getSingerList } from 'api/singer'
-import { ERR_OK } from 'api/config'
+import {getSingerList} from 'api/singer'
+import {ERR_OK} from 'api/config'
 import Singer from 'common/js/singer'
-const HOT_NAME = '热门'
+import { mapMutations } from 'vuex'
+// import {playlistMixin} from 'common/js/mixin'
+
 const HOT_SINGER_LEN = 10
+const HOT_NAME = '热门'
+
 export default {
+  // mixins: [playlistMixin],
   data () {
     return {
-      singerList: []
+      singers: []
     }
   },
   created () {
-    this._getSinger()
+    this._getSingerList()
   },
   methods: {
-    _getSinger () {
-      getSingerList().then(res => {
+    handlePlaylist (playlist) {
+      const bottom = playlist.length > 0 ? '60px' : ''
+      this.$refs.singer.style.bottom = bottom
+      this.$refs.list.refresh()
+    },
+    selectSinger (singer) {
+      this.$router.push({
+        path: `/singer/${singer.id}`
+      })
+      this.setSinger(singer)
+    },
+    _getSingerList () {
+      getSingerList().then((res) => {
         if (res.code === ERR_OK) {
-          this.singerList = this._normalizeData(res.data.list)
-          console.log(this.singerList)
+          this.singers = this._normalizeSinger(res.data.list)
         }
       })
     },
-    // 整理自己想要的数据
-    _normalizeData (list) {
+    _normalizeSinger (list) {
       let map = {
         hot: {
           title: HOT_NAME,
           items: []
         }
       }
-      // 提取热门数据
       list.forEach((item, index) => {
         if (index < HOT_SINGER_LEN) {
           map.hot.items.push(new Singer({
@@ -45,7 +60,6 @@ export default {
             id: item.Fsinger_mid
           }))
         }
-        // 获取a-z的数据，每个字母开头和下面的数据
         const key = item.Findex
         if (!map[key]) {
           map[key] = {
@@ -58,12 +72,11 @@ export default {
           id: item.Fsinger_mid
         }))
       })
-      // 整理有序列表A-Z
+      // 为了得到有序列表，我们需要处理 map
       let ret = []
       let hot = []
-      for (let k in map) {
-        const val = map[k]
-        // 正则
+      for (let key in map) {
+        let val = map[key]
         if (val.title.match(/[a-zA-Z]/)) {
           ret.push(val)
         } else if (val.title === HOT_NAME) {
@@ -74,14 +87,22 @@ export default {
         return a.title.charCodeAt(0) - b.title.charCodeAt(0)
       })
       return hot.concat(ret)
-    }
+    },
+    ...mapMutations({
+      setSinger: 'SET_SINGER'
+    })
   },
   components: {
     ListView
   }
 }
+
 </script>
 
-<style scoped lang="stylus">
-
+<style scoped lang="stylus" rel="stylesheet/stylus">
+  .singer
+    position: fixed
+    top: 88px
+    bottom: 0
+    width: 100%
 </style>

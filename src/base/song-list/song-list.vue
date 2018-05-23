@@ -2,9 +2,11 @@
   <div class="song-list">
     <ul>
       <li @click="selectItem(song, index)" class="item" v-for="(song, index) in songs" :key="index">
+        <!-- 1.0 奖杯样式 -->
         <div class="rank" v-show="rank">
           <span :class="getRankCls(index)" v-text="getRankText(index)"></span>
         </div>
+        <!-- 2.0 歌名歌手 -->
         <div class="content">
           <h2 class="name">{{song.name}}</h2>
           <p class="desc">{{getDesc(song)}}</p>

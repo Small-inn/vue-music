@@ -1,9 +1,10 @@
 <template>
   <div class="music-list">
-    <!--  -->
+    <!-- 1.0 头部，back按钮 -->
     <div class="back" @click="back">
       <i class="icon-back"></i>
     </div>
+    <!-- 1.1 标题和图片 -->
     <h1 class="title" v-html="title"></h1>
     <div class="bg-image" :style="bgStyle" ref="bgImage">
       <div class="play-wrapper">
@@ -12,20 +13,21 @@
           <span class="text">随机播放全部</span>
         </div>
       </div>
+      <!-- 1.2 高斯模糊效果 -->
       <div class="filter" ref="filter"></div>
     </div>
-    <!--  -->
+    <!-- 2.0  -->
     <div class="bg-layer" ref="layer"></div>
     <scroll class="list"
             @scroll="scroll"
             :listen-scroll="listenScroll"
             :probe-type="probeType"
             ref="list">
-      <!--  -->
+      <!-- 3.0 歌曲列表 -->
       <div class="song-list-wrapper">
         <song-list :songs="songs" :rank="rank" @select="selectItem"></song-list>
       </div>
-      <!--  -->
+      <!-- 4.0 loading -->
       <div v-show="!songs.length" class="loading-container">
         <loading></loading>
       </div>
@@ -38,7 +40,13 @@
 import Scroll from 'base/scroll/scroll'
 import SongList from 'base/song-list/song-list'
 import Loading from 'base/loading/loading'
+import { prefixStyle } from 'common/js/dom'
+
+const backdrop = prefixStyle('backdrop-filter')
+const transform = prefixStyle('transform')
+
 const RESERVED_HEIGHT = 40
+
 export default {
   // mixins: [playlistMixin],
   props: {
@@ -62,14 +70,20 @@ export default {
     }
   },
   data () {
-    return {}
+    return {
+      scrollY: 0
+    }
   },
   created () {
     this.probeType = 3
     this.listenScroll = true
   },
   mounted () {
+    // console.log(this.$refs.list)
+    // 留出头部图片
+    // 记录高度
     this.imageHeight = this.$refs.bgImage.clientHeight
+    // 最小滚动高度
     this.minTransalteY = -this.imageHeight + RESERVED_HEIGHT
     this.$refs.list.$el.style.top = `${this.imageHeight}px`
   },
@@ -77,8 +91,8 @@ export default {
     back () {
       this.$router.back()
     },
-    scroll () {
-
+    scroll (pos) {
+      this.scrollY = pos.y
     },
     selectItem () {
 
@@ -93,7 +107,40 @@ export default {
     }
   },
   watch: {
+    scrollY (newY) {
+      // 至多滚动的高度
+      let translateY = Math.max(this.minTransalteY, newY)
+      let zIndex = 0
+      // 下拉放大比例
+      let scale = 1
+      const percent = Math.abs(newY / this.imageHeight)
 
+      // 高斯模糊
+      let blur = 0
+
+      if (newY > 0) {
+        scale = 1 + percent
+        zIndex = 10
+      } else {
+        blur = Math.min(20, percent * 20)
+      }
+
+      this.$refs.layer.style['transform'] = `translate3d(0, ${translateY}px, 0)`
+      this.$refs.filter.style[backdrop] = `blur(${blur}px)`
+
+      if (newY < this.minTransalteY) {
+        zIndex = 10
+        this.$refs.bgImage.style.paddingTop = 0
+        this.$refs.bgImage.style.height = `${RESERVED_HEIGHT}px`
+        this.$refs.playBtn.style.display = 'none'
+      } else {
+        this.$refs.bgImage.style.paddingTop = '70%'
+        this.$refs.bgImage.style.height = 0
+        this.$refs.playBtn.style.display = ''
+      }
+      this.$refs.bgImage.style.zIndex = zIndex
+      this.$refs.bgImage.style[transform] = `scale(${scale})`
+    }
   },
   components: {
     Scroll,

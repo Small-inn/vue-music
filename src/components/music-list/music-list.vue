@@ -125,7 +125,7 @@ export default {
         blur = Math.min(20, percent * 20)
       }
 
-      this.$refs.layer.style['transform'] = `translate3d(0, ${translateY}px, 0)`
+      this.$refs.layer.style[transform] = `translate3d(0, ${translateY}px, 0)`
       this.$refs.filter.style[backdrop] = `blur(${blur}px)`
 
       if (newY < this.minTransalteY) {

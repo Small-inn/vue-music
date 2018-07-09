@@ -1,7 +1,7 @@
 <template>
   <Scroll class="listview"
           :data="data"
-          :listenScroll = "listenScroll"
+          :listenScroll="listenScroll"
           :probeType="probeType"
           @scroll="scroll"
           ref="listview">

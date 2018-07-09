@@ -6,7 +6,7 @@ for (let i = 0; i < 20; i++) {
   discList.push(Mock.mock({
     commit_time: Mock.Random.date('yyyy-MM-dd'),
     create_time: Mock.Random.date('yyyy-MM-dd'),
-    dissid: Mock.Random.string('number'),
+    dissid: Mock.Random.integer(),
     dissname: Mock.Random.cparagraph(1),
     imgUrl: Mock.Random.dataImage(),
     introdution: Mock.Random.cparagraph(3),
